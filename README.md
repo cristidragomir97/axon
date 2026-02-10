@@ -1,11 +1,5 @@
 # RoboCore Axon
 
-ROS 2 motor controller firmware for the RoboCore Axon carrier board.
-
-**Documentation:** [robocore.dev](https://robocore.dev)
-
-## Board Overview
-
 Axon is a carrier board that pairs a RP2350 with six motor protocols, I2C sensor ports, and a mikroBUS socket giving you access to over 2000 plug in boards over a single USB-C cable, publishing everything to ROS 2 via zenoh-pico as standard topics and services.
 
 The firmware runs a 100Hz control loop on Core 0 while Core 1 handles USB. Motor commands arrive as `Float64MultiArray` messages on configurable topics (`base_cmd`, `arm_cmd`, etc.), and feedback goes out as standard `JointState` and `Imu` messages. The zenoh-pico transport means your ROS 2 nodes see the Axon as a native participant—no serial protocol parsing, no micro-ROS agent, just plug in and `ros2 topic list`.
