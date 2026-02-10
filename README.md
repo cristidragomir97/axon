@@ -6,7 +6,11 @@ ROS 2 motor controller firmware for the RoboCore Axon carrier board.
 
 ## Board Overview
 
-The Axon is a standalone carrier board for Raspberry Pi Pico 2 (RP2350), designed as a motor bridge for robotics applications. It was designed to support almost every serial motor protocol and interface. Ranging from hobby class Feetech, Dynamixel, and Waveshare to professional LIN, CAN and RS485 based motors.
+Axon is a carrier board that pairs a RP2350 with six motor protocols, I2C sensor ports, and a mikroBUS socket giving you access to over 2000 plug in boards over a single USB-C cable, publishing everything to ROS 2 via zenoh-pico as standard topics and services.
+
+The firmware runs a 100Hz control loop on Core 0 while Core 1 handles USB. Motor commands arrive as `Float64MultiArray` messages on configurable topics (`base_cmd`, `arm_cmd`, etc.), and feedback goes out as standard `JointState` and `Imu` messages. The zenoh-pico transport means your ROS 2 nodes see the Axon as a native participant—no serial protocol parsing, no micro-ROS agent, just plug in and `ros2 topic list`.
+
+A second USB CDC interface provides transparent passthrough for RPLIDAR C1 or similar sensors, so you get lidar + motor control + IMU over one cable.
 
 ### Hardware
 
@@ -21,12 +25,12 @@ The Axon is a standalone carrier board for Raspberry Pi Pico 2 (RP2350), designe
 
 ### Motor Bus Connectors
 
-| Bus | Connector | Protocol | Baud | Use Case |
-|-----|-----------|----------|------|----------|
-| Feetech | CN6-CN7 (5264-3P) | Half-duplex UART | 1Mbps | SCS/STS servos |
-| Dynamixel | U5/U7/U17 (JST) | Half-duplex UART | 57600-4M | AX/MX/XL servos |
-| DDSM | CN1-CN4 (ZH1.5) | TTL UART | 115200 | DDSM210 wheels |
-| RS-485 | CN5/CN8-10 | Differential | 115200 | Industrial motors |
+| Bus | Protocol | Baud | Use Case |
+|-----|---------|------|----------|
+| Feetech | Half-duplex UART | 1Mbps | SCS/STS servos |
+| Dynamixel | | Half-duplex UART | 57600-4M | AX/MX/XL servos |
+| DDSM | TTL UART | 115200 | DDSM210 wheels |
+| RS-485 | Differential | 115200 | Industrial motors |
 
 ### Other Connectors
 
@@ -164,7 +168,6 @@ typedef struct {
 ### Feetech SCS/STS
 
 Position or velocity controlled servos (SCS0009, STS3215, etc.) at 1Mbps half-duplex.
-![](https://m.media-amazon.com/images/I/619xZORvVDL.jpg)
 
 ```c
 #include "protocol/feetech.h"
@@ -179,7 +182,6 @@ arm_servo.ops->set_command(&arm_servo, &cmd);
 ```
 
 ### DDSM210
-![](https://www.waveshare.com/w/upload/thumb/9/9a/DDSM210_V2.jpg/300px-DDSM210_V2.jpg)
 Waveshare brushless wheel motors with integrated driver. Velocity or position mode.
 
 ```c
