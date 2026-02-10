@@ -1,17 +1,15 @@
 # RoboCore Axon
 
-A single USB cable between your SBC and all your motors.
+A single USB cable between your SBC and all your motors and sensors.
 
-- 🔌 **One cable** — Motors, IMU, lidar, sensors. All over USB-C.
+- 🔌 **One cable** — Motors, sensors, lidar. All over USB-C.
 - 🤖 **Native ROS 2** — zenoh-pico transport, no micro-ROS agent needed. Just `ros2 topic list`.
 - 🎛️ **6 motor interfaces** — Feetech, Dynamixel, DDSM, RS-485 on-board, plus CAN/LIN via mikroBUS.
 - 📦 **Growing protocol library** — Feetech and DDSM210 included. Add your own or wait for community drivers.
-- 🔗 **Qwiic-ready** — Plug in any SparkFun/Adafruit I2C sensor, no soldering.
-- 🧩 **2000+ Click boards** — mikroBUS socket for CAN, Ethernet, GPS, and more.
+- 🔗 **Qwiic + mikroBUS** — I2C sensors, SPI devices, 2000+ Click boards. We provide the bus, you write the driver.
+- 📡 **Lidar passthrough** — RPLIDAR C1 or similar on a second CDC port. No extra USB-UART adapter.
 - 📝 **Sketch pattern** — We provide the SDK, you write `main.c` for your specific usecase
 - ⚡ **Flexible power** — 12-24V screw terminal or USB-C PD negotiation.
-
-The firmware runs a 100Hz control loop on Core 0 while Core 1 handles USB. Commands arrive as `Float64MultiArray`, feedback goes out as `JointState` and `Imu`. A second CDC interface passes through RPLIDAR data so you don't need another USB-UART adapter.
 
 ### Hardware
 
@@ -220,6 +218,52 @@ wheel.ops->set_command(&wheel, &cmd);
 - Velocity: ±210 RPM (0.1 RPM resolution)
 - Position: 0-360° (0.01° resolution)
 - Feedback: velocity, position, temperature, error code
+
+## Sensors
+
+The board provides hardware interfaces for sensors—you provide the driver code and ROS serialization in your sketch.
+
+### Available Interfaces
+
+| Interface | Connector | Use Case |
+|-----------|-----------|----------|
+| I2C (400kHz) | J1/J2 Qwiic (JST-SH) | IMUs, magnetometers, environmental sensors |
+| SPI | MB1 mikroBUS | High-speed sensors, displays |
+| ADC (3 channels) | GP26-28 | Analog sensors, battery monitoring |
+
+### Approach
+
+Unlike motors (which have a common `motor_ops_t` interface), sensors are too diverse for a one-size-fits-all abstraction. Instead:
+
+1. **Use existing libraries** — The example sketch uses [pico-bno055](https://github.com/alpertng02/pico-bno055) for the IMU.
+2. **Write your own driver** — Read from `SENSOR_I2C` or `MB_SPI` directly.
+3. **Publish to ROS** — Serialize your data and call `picoros_publish()`.
+
+```c
+// Example: BNO055 IMU in the sketch
+#include "bno055.h"
+
+bno055_t imu;
+bno055_init(&imu, SENSOR_I2C, 0x28);
+bno055_set_mode(&imu, BNO055_MODE_NDOF);
+
+// In your publish loop
+bno055_quaternion_t quat;
+bno055_get_quaternion(&imu, &quat);
+ros_publish_imu(orientation, angular_velocity, linear_acceleration);
+```
+
+### Lidar Passthrough
+
+For sensors with high data rates or existing ROS drivers (like RPLIDAR), the firmware provides a **transparent passthrough** on USB CDC1.
+
+```
+RPLIDAR C1 (U16) ←→ PIO UART ←→ USB CDC1 ←→ /dev/robocore_lidar
+```
+
+Your SBC runs `rplidar_ros2` pointing at the virtual serial port. The MCU just forwards bytes—no parsing, no buffering delays. Enable with `#define ENABLE_LIDAR_BRIDGE` in `config.h`.
+
+This approach works for any UART sensor where you'd rather run the driver on your SBC than on the MCU.
 
 ## Example Sketch
 
