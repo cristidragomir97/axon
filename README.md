@@ -1,10 +1,17 @@
 # RoboCore Axon
 
-Axon is a carrier board that pairs a RP2350 with six motor protocols, I2C sensor ports, and a mikroBUS socket giving you access to over 2000 plug in boards over a single USB-C cable, publishing everything to ROS 2 via zenoh-pico as standard topics and services.
+A single USB cable between your SBC and all your motors.
 
-The firmware runs a 100Hz control loop on Core 0 while Core 1 handles USB. Motor commands arrive as `Float64MultiArray` messages on configurable topics (`base_cmd`, `arm_cmd`, etc.), and feedback goes out as standard `JointState` and `Imu` messages. The zenoh-pico transport means your ROS 2 nodes see the Axon as a native participant—no serial protocol parsing, no micro-ROS agent, just plug in and `ros2 topic list`.
+- 🔌 **One cable** — Motors, IMU, lidar, sensors. All over USB-C.
+- 🤖 **Native ROS 2** — zenoh-pico transport, no micro-ROS agent needed. Just `ros2 topic list`.
+- 🎛️ **6 motor interfaces** — Feetech, Dynamixel, DDSM, RS-485 on-board, plus CAN/LIN via mikroBUS.
+- 📦 **Growing protocol library** — Feetech and DDSM210 included. Add your own or wait for community drivers.
+- 🔗 **Qwiic-ready** — Plug in any SparkFun/Adafruit I2C sensor, no soldering.
+- 🧩 **2000+ Click boards** — mikroBUS socket for CAN, Ethernet, GPS, and more.
+- 📝 **Sketch pattern** — We provide the SDK, you write `main.c` for your specific usecase
+- ⚡ **Flexible power** — 12-24V screw terminal or USB-C PD negotiation.
 
-A second USB CDC interface provides transparent passthrough for RPLIDAR C1 or similar sensors, so you get lidar + motor control + IMU over one cable.
+The firmware runs a 100Hz control loop on Core 0 while Core 1 handles USB. Commands arrive as `Float64MultiArray`, feedback goes out as `JointState` and `Imu`. A second CDC interface passes through RPLIDAR data so you don't need another USB-UART adapter.
 
 ### Hardware
 
@@ -13,18 +20,22 @@ A second USB CDC interface provides transparent passthrough for RPLIDAR C1 or si
 | MCU | RP2350 (dual Cortex-M33 @ 150MHz, 520KB SRAM) |
 | Power | 12-24V screw terminal or USB-C PD (HUSB238) |
 | USB | Composite CDC (zenoh transport + lidar passthrough) |
-| Motor buses | 4 independent buses (see below) |
+| Motor interfaces | 4 independent buses (see below) |
 | Sensors | I2C (Qwiic), SPI (mikroBUS), 3x ADC |
 | Expansion | mikroBUS socket, spare GPIO |
 
-### Motor Bus Connectors
+### Interfaces (Physical Buses)
 
-| Bus | Protocol | Baud | Use Case |
-|-----|---------|------|----------|
-| Feetech | Half-duplex UART | 1Mbps | SCS/STS servos |
-| Dynamixel | | Half-duplex UART | 57600-4M | AX/MX/XL servos |
-| DDSM | TTL UART | 115200 | DDSM210 wheels |
-| RS-485 | Differential | 115200 | Industrial motors |
+The board provides 4 independent motor interfaces. Each is a physical bus with specific electrical characteristics:
+
+| Interface | Type | Baud | Intended Use |
+|-----------|------|------|--------------|
+| Feetech | Half-duplex UART | 1Mbps | SCS/STS servo bus |
+| Dynamixel | Half-duplex UART | 57600-4M | AX/MX/XL servo bus |
+| DDSM | TTL UART | 115200 | Waveshare motor bus |
+| RS-485 | Differential (MAX3485) | 115200 | Industrial motors, Modbus, etc. |
+
+> **Note:** Interfaces are named by their typical use, but you can use any compatible protocol on any bus. For example, `bus_rs485` works with any RS-485 device—Modbus RTU, DMX, or custom protocols.
 
 ### Other Connectors
 
@@ -83,14 +94,14 @@ robocore-axon/
 ├── lib/                        # SDK
 │   ├── board.c/h               # Hardware init, bus instances
 │   ├── motor.h                 # Motor interface (vtable pattern)
-│   ├── transport/              # UART, PIO UART, RS-485
-│   │   ├── transport.h         # Abstract transport interface
+│   ├── transport/              # Interface abstraction
+│   │   ├── transport.h         # Common transport API
 │   │   ├── uart_hw.c           # Hardware UART (half-duplex)
 │   │   ├── uart_pio.c          # PIO UART (full-duplex)
 │   │   └── rs485.c             # RS-485 with DE control
-│   ├── protocol/               # Motor drivers
-│   │   ├── feetech.c/h         # Feetech SCS/STS servos
-│   │   └── ddsm210.c/h         # Waveshare DDSM210 wheels
+│   ├── protocol/               # Motor protocol drivers
+│   │   ├── feetech.c/h         # Feetech SCS/STS protocol
+│   │   └── ddsm210.c/h         # Waveshare DDSM210 protocol
 │   ├── pio/                    # PIO programs
 │   └── lidar_bridge.c/h        # RPLIDAR passthrough
 │
@@ -105,9 +116,9 @@ robocore-axon/
 └── CMakeLists.txt
 ```
 
-## Transport Layer
+## Transport Layer (Interface Abstraction)
 
-Transports abstract the physical communication layer. Each bus is a `transport_t` with a common interface:
+Transports abstract the physical interfaces into a common API. Each interface becomes a `transport_t` that protocols use for I/O:
 
 ```c
 // transport.h
@@ -128,9 +139,9 @@ typedef struct {
 | `uart_pio` | PIO state machine | Full-duplex, any GPIO pair |
 | `rs485` | PIO + DE pin | MAX3485 transceiver with direction control |
 
-### Pre-configured Buses
+### Pre-configured Interfaces
 
-These are initialized by `board_init()` and ready to use:
+These transports are initialized by `board_init()` and ready to use with any compatible protocol:
 
 ```c
 extern transport_t bus_feetech;    // UART1, 1Mbps, half-duplex
@@ -139,7 +150,21 @@ extern transport_t bus_ddsm;       // PIO, 115200, full-duplex
 extern transport_t bus_rs485;      // PIO + DE, 115200
 ```
 
-## Motor Protocols
+## Protocols (Software Drivers)
+
+Protocols are software drivers that implement a specific motor communication protocol over a transport. The board provides the interfaces; you choose which protocol to run on each.
+
+**Included protocols:**
+| Protocol | Interface | Motors |
+|----------|-----------|--------|
+| Feetech | `bus_feetech` | SCS0009, STS3215, STS3032, etc. |
+| DDSM210 | `bus_ddsm` | Waveshare DDSM210 wheels |
+
+**Not yet implemented** (contributions welcome):
+- Dynamixel Protocol 1.0/2.0 (`bus_dynamixel`)
+- Modbus RTU (`bus_rs485`)
+- ODrive ASCII/CAN
+- Gyems RMD series
 
 Motor drivers implement the `motor_ops_t` interface:
 
@@ -279,30 +304,32 @@ cp firmware.uf2 /Volumes/RP2350/
 - [Pico-ROS](https://github.com/Pico-ROS/Pico-ROS-software) — zenoh-pico ROS 2 bridge
 - [pico-bno055](https://github.com/alpertng02/pico-bno055) — IMU driver
 
-## Adding a Motor Driver
+## Adding a Protocol
 
-1. Create `lib/protocol/mymotor.h`:
+To add support for a new motor protocol:
+
+1. Create `lib/protocol/myprotocol.h`:
 ```c
 #include "motor.h"
 #include "transport/transport.h"
 
-void mymotor_init(motor_t *motor, transport_t *transport,
-                  uint8_t id, const char *name);
+void myprotocol_motor_init(motor_t *motor, transport_t *transport,
+                           uint8_t id, const char *name);
 ```
 
-2. Implement `lib/protocol/mymotor.c`:
+2. Implement `lib/protocol/myprotocol.c`:
 ```c
-static bool mymotor_set_command(motor_t *motor, const motor_cmd_t *cmd) {
+static bool myprotocol_set_command(motor_t *motor, const motor_cmd_t *cmd) {
     // Build and send packet via motor->transport
     // Parse response, update motor->state
 }
 
-static const motor_ops_t mymotor_ops = {
-    .init = mymotor_init_hw,
-    .set_enabled = mymotor_set_enabled,
-    .set_command = mymotor_set_command,
-    .get_state = mymotor_get_state,
-    .poll = mymotor_poll,
+static const motor_ops_t myprotocol_ops = {
+    .init = myprotocol_init_hw,
+    .set_enabled = myprotocol_set_enabled,
+    .set_command = myprotocol_set_command,
+    .get_state = myprotocol_get_state,
+    .poll = myprotocol_poll,
 };
 ```
 
@@ -310,14 +337,17 @@ static const motor_ops_t mymotor_ops = {
 ```cmake
 add_library(axon_lib STATIC
     # ...
-    lib/protocol/mymotor.c
+    lib/protocol/myprotocol.c
 )
 ```
 
-4. Use in your sketch:
+4. Use in your sketch (protocol + interface):
 ```c
-#include "protocol/mymotor.h"
-mymotor_init(&motor, &bus_rs485, 1, "joint1");
+#include "protocol/myprotocol.h"
+
+// Use your protocol on any compatible interface
+myprotocol_motor_init(&motor, &bus_rs485, 1, "joint1");    // RS-485 interface
+myprotocol_motor_init(&motor, &bus_dynamixel, 1, "joint1"); // or Dynamixel interface
 ```
 
 ## License
