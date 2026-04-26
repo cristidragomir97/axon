@@ -38,8 +38,7 @@ add_executable(axon_firmware
     src/neopixel.c
     src/usb_handlers.c
     src/bus/rs485.c
-    src/bus/feetech.c
-    src/bus/dynamixel.c
+    src/bus/half_duplex.c
     src/bus/can.c
     src/bus/uart_bridge.c
 )

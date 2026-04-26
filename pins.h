@@ -85,19 +85,6 @@
 // If RS485 also needs PIO (e.g. for timing-critical DE control):
 //     Move RS485 TX/RX to PIO0 SM2/SM3 → 9 used, 3 free
 //
-// ============================================================
-// Backward Compatibility Aliases
-// ============================================================
-
-// Legacy servo bus compatibility - both point to unified motor bus
-#define PIN_STSM_TX         PIN_MOTOR_TX      // Feetech now uses motor bus
-#define PIN_STSM_RX         PIN_MOTOR_RX  
-#define PIN_STSM_TXEN       PIN_MOTOR_TXEN
-
-#define PIN_DYNAMIXEL_TX    PIN_MOTOR_TX      // Dynamixel now uses motor bus  
-#define PIN_DYNAMIXEL_RX    PIN_MOTOR_RX
-#define PIN_DYNAMIXEL_TXEN  PIN_MOTOR_TXEN
-
 // UART1 moved from GPIO19/20 to GPIO5/6 in new board revision
 // (GPIO5/6 were previously Feetech pins)
 

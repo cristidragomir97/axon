@@ -9,10 +9,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Installing Axon udev rules..."
 
 # Copy enumeration script
-sudo cp "$SCRIPT_DIR/axon-enumerate.sh" /usr/local/bin/
-sudo chmod +x /usr/local/bin/axon-enumerate.sh
-echo "✓ Installed enumeration script"
-
 # Copy udev rules  
 sudo cp "$SCRIPT_DIR/99-axon-devices.rules" /etc/udev/rules.d/
 echo "✓ Installed udev rules"

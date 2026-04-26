@@ -17,8 +17,7 @@ static absolute_time_t last_update_time;
 // Predefined colors for each LED type
 static const neopixel_color_t led_colors[LED_COUNT] = {
     [LED_RS485]    = {0, LED_MAX_BRIGHTNESS, 0},  // Green
-    [LED_FEETECH]  = {0, LED_MAX_BRIGHTNESS, 0},  // Green  
-    [LED_DYNAMIXEL]= {0, LED_MAX_BRIGHTNESS, 0},  // Green
+    [LED_FEETECH]  = {0, LED_MAX_BRIGHTNESS, 0},  // Green
     [LED_UART0]    = {0, LED_MAX_BRIGHTNESS, 0},  // Green
     [LED_UART1]    = {0, LED_MAX_BRIGHTNESS, 0},  // Green
     [LED_I2C]      = {0, LED_MAX_BRIGHTNESS, 0},  // Green

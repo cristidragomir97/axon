@@ -32,8 +32,7 @@
 #include "usb_handlers.h"
 #include "pico/multicore.h"
 #include "bus/rs485.h"
-#include "bus/feetech.h"
-#include "bus/dynamixel.h"
+#include "bus/half_duplex.h"
 #include "bus/can.h"
 #include "bus/uart_bridge.h"
 
@@ -93,9 +92,9 @@ static uint32_t uart2_available(void) { return uart_bridge_available(UART_BRIDGE
 // Unified Motor Bridge Helper
 // Uses Feetech as primary interface since both protocols share the same hardware
 //--------------------------------------------------------------------
-static uint32_t motor_write(const uint8_t *d, uint32_t n) { return feetech_write(d, n); }
-static uint32_t motor_read(uint8_t *d, uint32_t n) { return feetech_read(d, n); }
-static uint32_t motor_available(void) { return feetech_available(); }
+static uint32_t motor_write(const uint8_t *d, uint32_t n) { return half_duplex_write(d, n); }
+static uint32_t motor_read(uint8_t *d, uint32_t n) { return half_duplex_read(d, n); }
+static uint32_t motor_available(void) { return half_duplex_available(); }
 
 //--------------------------------------------------------------------
 // CDC Line Coding Callback
@@ -106,10 +105,8 @@ static uint32_t motor_available(void) { return feetech_available(); }
 void tud_cdc_line_coding_cb(uint8_t itf, cdc_line_coding_t const *coding) {
     switch (itf) {
     case CDC_IDX_RS485:    rs485_set_baudrate(coding->bit_rate); break;
-    case CDC_IDX_MOTOR:    
-        // Set baudrate for both motor protocols (they share the same hardware)
-        feetech_set_baudrate(coding->bit_rate);
-        dynamixel_set_baudrate(coding->bit_rate);
+    case CDC_IDX_MOTOR:
+        half_duplex_set_baudrate(coding->bit_rate);
         break;
     case CDC_IDX_UART0: {
         uart_config_t cfg = { .baudrate = coding->bit_rate };
@@ -160,14 +157,9 @@ int main(void) {
     led_set(LED_RS485, true);
     sleep_ms(300);
 
-    // Initialize unified motor bus (shared by Feetech and Dynamixel CDC interfaces)
-    feetech_init(1000000);
+    // Initialize unified half-duplex motor bus (Feetech/Dynamixel share the same wire)
+    half_duplex_init(1000000);
     led_set(LED_FEETECH, true);
-    sleep_ms(200);
-    
-    // Dynamixel shares the same physical motor bus
-    dynamixel_init(1000000);  // Uses same pins as Feetech
-    led_set(LED_DYNAMIXEL, true);
     sleep_ms(300);
 
     // Initialize UART bridges
@@ -250,8 +242,7 @@ int main(void) {
 
         // Poll hardware drivers (move data from hardware to buffers)
         rs485_task();
-        feetech_task();
-        dynamixel_task();
+        half_duplex_task();
         uart_bridge_task();
         can_task();
 

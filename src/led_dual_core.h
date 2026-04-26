@@ -10,7 +10,6 @@ typedef enum {
     LED_UART0,
     LED_UART1,
     LED_FEETECH,
-    LED_DYNAMIXEL = LED_FEETECH,  // Motor bus LEDs share same address
     LED_CAN,
     LED_RS485,
     LED_COUNT = 6   // Only 6 physical NeoPixels
