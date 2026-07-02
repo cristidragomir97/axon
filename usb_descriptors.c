@@ -103,17 +103,17 @@ uint8_t const *tud_descriptor_configuration_cb(uint8_t index) {
 static char const *string_desc_arr[] = {
     [STR_IDX_LANG]    = (const char[]){0x09, 0x04},
     [STR_IDX_MANUF]   = "RoboCore",
-    [STR_IDX_PRODUCT] = "Axon Multiprotocol Bridge",
+    [STR_IDX_PRODUCT] = "Link101 Multiprotocol Bridge",
     [STR_IDX_SERIAL]  = NULL,
-    [STR_IDX_CDC0]    = "RoboCore Axon RS485",
-    [STR_IDX_CDC1]    = "RoboCore Axon Motor",
-    [STR_IDX_CDC2]    = "RoboCore Axon UART0",
-    [STR_IDX_CDC3]    = "RoboCore Axon UART1",
+    [STR_IDX_CDC0]    = "RoboCore Link101 RS485",
+    [STR_IDX_CDC1]    = "RoboCore Link101 Motor",
+    [STR_IDX_CDC2]    = "RoboCore Link101 UART0",
+    [STR_IDX_CDC3]    = "RoboCore Link101 UART1",
 #ifdef ENABLE_UART2
-    [STR_IDX_CDC4]    = "RoboCore Axon UART2",
+    [STR_IDX_CDC4]    = "RoboCore Link101 UART2",
 #endif
-    [STR_IDX_CAN]     = "RoboCore Axon CAN",
-    [STR_IDX_I2C]     = "RoboCore Axon I2C",
+    [STR_IDX_CAN]     = "RoboCore Link101 CAN",
+    [STR_IDX_I2C]     = "RoboCore Link101 I2C",
 };
 
 static uint16_t _desc_str[33];

@@ -1,8 +1,8 @@
-# Axon USB Composite Test — Claude Code Brief
+# Link101 USB Composite Test — Claude Code Brief
 
 ## What This Is
 
-A test firmware for RP2040 (Pico) that validates three USB interface types coexisting in one composite device. This is a go/no-go test for the RoboCore Axon product architecture.
+A test firmware for RP2040 (Pico) that validates three USB interface types coexisting in one composite device. This is a go/no-go test for the RoboCore Link101 product architecture.
 
 There is also a companion Linux kernel module (`robocore-i2c-dkms/`) that must be installed on the test machine.
 

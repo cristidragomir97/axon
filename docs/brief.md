@@ -1,8 +1,8 @@
-# Axon USB Composite Test — Claude Code Brief
+# Link101 USB Composite Test — Claude Code Brief
 
 ## Goal
 
-Build and flash a test firmware for RP2040 (Pico) that validates whether three USB interface types can coexist in a single composite device. This is a go/no-go test for the Axon product architecture.
+Build and flash a test firmware for RP2040 (Pico) that validates whether three USB interface types can coexist in a single composite device. This is a go/no-go test for the Link101 product architecture.
 
 ## The Question We're Answering
 
@@ -93,7 +93,7 @@ mkdir build && cd build
 cmake .. -DPICO_BOARD=pico  # RP2040
 make -j$(nproc)
 # Hold BOOTSEL, plug USB, release, then:
-cp axon_usb_test.uf2 /Volumes/RPI-RP2/  # macOS
+cp link101_usb_test.uf2 /Volumes/RPI-RP2/  # macOS
 ```
 
 ## Testing

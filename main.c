@@ -1,5 +1,5 @@
 /*
- * Axon Multiprotocol USB Bridge
+ * Link101 Multiprotocol USB Bridge
  * =============================
  *
  * A USB composite device that bridges multiple communication protocols:
@@ -227,7 +227,7 @@ int main(void) {
     }
 
     printf("\n");
-    printf("Axon Multiprotocol USB Bridge v2.0\n");
+    printf("Link101 Multiprotocol USB Bridge v2.0\n");
     printf("──────────────────────────────────\n");
     printf("CDC #0: RS485      CDC #2: UART0\n");
     printf("CDC #1: Motor      CDC #3: UART1\n");

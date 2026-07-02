@@ -1,5 +1,5 @@
-# Axon Multiprotocol USB Bridge Firmware
-# Target: RoboCore Axon RP2350 Board
+# Link101 Multiprotocol USB Bridge Firmware
+# Target: RoboCore Link101 RP2350 Board
 
 cmake_minimum_required(VERSION 3.13)
 
@@ -26,12 +26,12 @@ set(PICO_PLATFORM rp2350 CACHE STRING "Platform type")
 
 include(pico_sdk_import.cmake)
 
-project(axon_firmware C CXX ASM)
+project(link101_firmware C CXX ASM)
 
 pico_sdk_init()
 
 # Source files
-add_executable(axon_firmware
+add_executable(link101_firmware
     main.c
     usb_descriptors.c
     src/led_dual_core.c
@@ -43,18 +43,18 @@ add_executable(axon_firmware
     src/bus/uart_bridge.c
 )
 
-pico_set_program_name(axon_firmware "Axon Multiprotocol Bridge")
-pico_set_program_version(axon_firmware "2.0")
+pico_set_program_name(link101_firmware "Link101 Multiprotocol Bridge")
+pico_set_program_version(link101_firmware "2.0")
 
 # Optional features - uncomment to enable
-target_compile_definitions(axon_firmware PRIVATE ENABLE_UART2)
+target_compile_definitions(link101_firmware PRIVATE ENABLE_UART2)
 
 # UART for debug output (USB is the composite device)
-pico_enable_stdio_uart(axon_firmware 1)
-pico_enable_stdio_usb(axon_firmware 0)
+pico_enable_stdio_uart(link101_firmware 1)
+pico_enable_stdio_usb(link101_firmware 0)
 
 # Link libraries
-target_link_libraries(axon_firmware
+target_link_libraries(link101_firmware
     pico_stdlib
     pico_unique_id
     pico_multicore
@@ -69,16 +69,16 @@ target_link_libraries(axon_firmware
 )
 
 # Include paths
-target_include_directories(axon_firmware PRIVATE
+target_include_directories(link101_firmware PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/src
     ${CMAKE_CURRENT_LIST_DIR}/src/bus
     ${CMAKE_CURRENT_LIST_DIR}/src/protocol
 )
 
-pico_add_extra_outputs(axon_firmware)
+pico_add_extra_outputs(link101_firmware)
 
 # Generate PIO headers
-pico_generate_pio_header(axon_firmware ${CMAKE_CURRENT_LIST_DIR}/src/pio/uart_tx.pio)
-pico_generate_pio_header(axon_firmware ${CMAKE_CURRENT_LIST_DIR}/src/pio/uart_rx.pio)
-pico_generate_pio_header(axon_firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio)
+pico_generate_pio_header(link101_firmware ${CMAKE_CURRENT_LIST_DIR}/src/pio/uart_tx.pio)
+pico_generate_pio_header(link101_firmware ${CMAKE_CURRENT_LIST_DIR}/src/pio/uart_rx.pio)
+pico_generate_pio_header(link101_firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio)

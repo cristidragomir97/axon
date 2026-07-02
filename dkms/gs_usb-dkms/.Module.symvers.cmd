@@ -1,1 +1,0 @@
-cmd_/home/cdr/axon/firmware/dkms/gs_usb-dkms/Module.symvers := sed 's/\.ko$$/\.o/' /home/cdr/axon/firmware/dkms/gs_usb-dkms/modules.order | scripts/mod/modpost -m   -o /home/cdr/axon/firmware/dkms/gs_usb-dkms/Module.symvers -e -i Module.symvers   -T -

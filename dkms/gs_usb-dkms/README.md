@@ -1,23 +1,23 @@
-# RoboCore Axon gs_usb DKMS Module
+# RoboCore Link101 gs_usb DKMS Module
 
-This DKMS package provides gs_usb kernel driver support for RoboCore Axon CAN interface on NVIDIA Tegra systems (and other systems where gs_usb is not included).
+This DKMS package provides gs_usb kernel driver support for RoboCore Link101 CAN interface on NVIDIA Tegra systems (and other systems where gs_usb is not included).
 
 ## What it does
 
-- Adds RoboCore Axon (VID:1209 PID:AC01) to gs_usb driver device table
-- Creates SocketCAN interface when Axon device is connected
+- Adds RoboCore Link101 (VID:1209 PID:AC01) to gs_usb driver device table
+- Creates SocketCAN interface when Link101 device is connected
 - Works with standard Linux CAN tools (candump, cansend, etc.)
 
 ## Installation
 
 ```bash
-cd /path/to/axon/firmware/dkms/gs_usb-dkms
+cd /path/to/link101/firmware/dkms/gs_usb-dkms
 sudo ./install.sh
 ```
 
 ## Usage
 
-1. Connect RoboCore Axon device
+1. Connect RoboCore Link101 device
 2. Check if CAN interface appeared:
    ```bash
    ip link show | grep can
@@ -47,7 +47,7 @@ sudo ./install.sh
 
 ## Firmware Requirements
 
-The RoboCore Axon firmware must:
+The RoboCore Link101 firmware must:
 - Use VID:1209 PID:AC01 
 - Implement gs_usb protocol on vendor interface
 - Have proper USB descriptors for gs_usb compatibility

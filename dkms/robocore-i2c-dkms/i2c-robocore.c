@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * i2c-robocore.c — I2C adapter driver for RoboCore Axon
+ * i2c-robocore.c — I2C adapter driver for RoboCore Link101</｜DSML｜parameter>
  *
  * Based on i2c-tiny-usb by Till Harbaum <till@harbaum.org>
  * Modified for composite device support by RoboCore
@@ -204,7 +204,7 @@ static int i2c_robocore_probe(struct usb_interface *interface,
 	 * COMPOSITE DEVICE FILTER
 	 *
 	 * Only bind to interfaces with subclass=0x01 protocol=0x01.
-	 * Axon sets this only on its I2C interface, so we skip CAN
+	 * Link101 sets this only on its I2C interface, so we skip CAN
 	 * and any other vendor-class interfaces.
 	 */
 	if (hostif->desc.bInterfaceSubClass != ROBOCORE_I2C_SUBCLASS ||
@@ -242,7 +242,7 @@ static int i2c_robocore_probe(struct usb_interface *interface,
 	dev->adapter.dev.parent = &interface->dev;
 	i2c_set_adapdata(&dev->adapter, dev);
 	snprintf(dev->adapter.name, sizeof(dev->adapter.name),
-		 "RoboCore Axon I2C at usb-%s-%s if%d",
+         "RoboCore Link101 I2C at usb-%s-%s if%d",
 		 dev->usb_dev->bus->bus_name,
 		 dev->usb_dev->devpath,
 		 hostif->desc.bInterfaceNumber);
@@ -313,5 +313,5 @@ static struct usb_driver i2c_robocore_driver = {
 module_usb_driver(i2c_robocore_driver);
 
 MODULE_AUTHOR("RoboCore <hello@robocore.dev>");
-MODULE_DESCRIPTION("I2C adapter for RoboCore Axon (composite-aware i2c-tiny-usb)");
+MODULE_DESCRIPTION("I2C adapter for RoboCore Link101 (composite-aware i2c-tiny-usb)");
 MODULE_LICENSE("GPL");

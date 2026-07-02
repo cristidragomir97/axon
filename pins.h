@@ -1,8 +1,8 @@
-#ifndef AXON_PINOUT_H
-#define AXON_PINOUT_H
+#ifndef LINK101_PINOUT_H
+#define LINK101_PINOUT_H
 
 // ============================================================
-// RoboCore Axon — RP2350 Pin Assignments
+// RoboCore Link101 — RP2350 Pin Assignments
 // Generated from KiCad schematic, GPIO0–GPIO28
 // ============================================================
 
@@ -90,4 +90,4 @@
 
 // ============================================================
 
-#endif // AXON_PINOUT_H
+#endif // LINK101_PINOUT_H

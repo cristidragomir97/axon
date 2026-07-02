@@ -1,2 +1,14 @@
 build
 !.vscode/*
+.DS_Store
+dkms/*/.*.cmd
+*.swp
+*.orig
+*.bak
+*~
+*.tmp
+*.log
+__pycache__/
+*.pyc
+Thumbs.db
+

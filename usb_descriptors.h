@@ -2,7 +2,7 @@
 #define USB_DESCRIPTORS_H
 
 //--------------------------------------------------------------------
-// Axon USB Composite Device - Interface Layout
+// Link101 USB Composite Device - Interface Layout
 //--------------------------------------------------------------------
 //
 // CDC #0 (IF0+1):   RS485 serial bridge

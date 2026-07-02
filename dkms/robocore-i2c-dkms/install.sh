@@ -68,7 +68,7 @@ do_install() {
     ok "Module loaded"
 
     echo ""
-    echo "Done! Plug in your Axon."
+    echo "Done! Plug in your Link101."
     echo "I2C will appear at /dev/robocore/i2c"
     echo "Test with: i2cdetect -l | grep -i robocore"
 }

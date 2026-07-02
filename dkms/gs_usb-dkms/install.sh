@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# RoboCore Axon gs_usb DKMS installer
-# Installs gs_usb kernel module with support for RoboCore Axon CAN interface
+# RoboCore Link101 gs_usb DKMS installer
+# Installs gs_usb kernel module with support for RoboCore Link101 CAN interface
 
 set -e
 
@@ -9,7 +9,7 @@ PACKAGE_NAME="gs_usb"
 PACKAGE_VERSION="1.0"
 PACKAGE_DIR="/usr/src/${PACKAGE_NAME}-${PACKAGE_VERSION}"
 
-echo "Installing RoboCore Axon gs_usb DKMS module..."
+echo "Installing RoboCore Link101 gs_usb DKMS module..."
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
@@ -53,8 +53,8 @@ modprobe gs_usb
 
 echo "Installation complete!"
 echo ""
-echo "The gs_usb module now supports RoboCore Axon devices (VID:1209 PID:AC01)"
-echo "Connect your Axon device and check 'dmesg' for CAN interface creation."
+echo "The gs_usb module now supports RoboCore Link101 devices (VID:1209 PID:AC01)"
+echo "Connect your Link101 device and check 'dmesg' for CAN interface creation."
 echo "Use 'ip link show' to see available CAN interfaces."
 echo ""
 echo "To configure CAN interface:"

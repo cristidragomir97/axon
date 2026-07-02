@@ -1,10 +1,10 @@
-# Axon Multiprotocol Bridge Firmware
+# Link101 Multiprotocol Bridge Firmware
 
-Production firmware for the RoboCore Axon board providing multiple communication interfaces over USB.
+Production firmware for the RoboCore Link101 board providing multiple communication interfaces over USB.
 
 ## Overview
 
-The Axon board is a versatile USB-to-multiprotocol bridge built around the RP2350 microcontroller with dedicated hardware for:
+The Link101 board is a versatile USB-to-multiprotocol bridge built around the RP2350 microcontroller with dedicated hardware for:
 - **CAN Bus** (MCP2518FD + SN65HVD230 transceiver)
 - **RS485** (isolated transceiver ADM2587E)
 - **UART Bridges** (2-3 general purpose UARTs)
@@ -14,7 +14,7 @@ The Axon board is a versatile USB-to-multiprotocol bridge built around the RP235
 
 ### 1. Build Firmware
 ```bash
-cd /home/cdr/axon/firmware
+cd /home/cdr/link101/firmware
 mkdir build && cd build
 cmake ..
 make -j$(nproc)
@@ -24,7 +24,7 @@ make -j$(nproc)
 ```bash
 # Enter bootloader mode (hold BOOT button, press RESET)
 # Flash firmware
-cp axon_firmware.uf2 /media/RPI-RP2/
+cp link101_firmware.uf2 /media/RPI-RP2/
 ```
 
 ### 3. Install Kernel Modules
@@ -38,7 +38,7 @@ cd ../robocore-i2c-dkms
 sudo ./install.sh
 
 # Install udev rules
-sudo cp 99-axon-devices.rules /etc/udev/rules.d/
+sudo cp 99-link101-devices.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules
 ```
 

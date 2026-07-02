@@ -1,1 +1,0 @@
-cmd_/home/cdr/axon/firmware/dkms/gs_usb-dkms/gs_usb.mod := printf '%s\n'   gs_usb.o | awk '!x[$$0]++ { print("/home/cdr/axon/firmware/dkms/gs_usb-dkms/"$$0) }' > /home/cdr/axon/firmware/dkms/gs_usb-dkms/gs_usb.mod
